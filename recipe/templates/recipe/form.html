@@ -4,7 +4,7 @@
 <section class="flex justify-center">
 
 <div class="w-full max-w-lg p-6 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-    <form class="space-y-6" action="{% url 'recipe:update_ingredient' recipe_primary_key=recipe.id ingredient_primary_key=ingredient.id %}" method="post" enctype="multipart/form-data">
+    <form class="space-y-6" action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h5 class="text-xl font-medium text-gray-900 dark:text-white">{{ title }}</h5>
         {% for field in form %}
