@@ -6,6 +6,12 @@ from .models import Category, Recipe, Ingredient, Instruction
 from .forms import RecipeForm, IngredientsForm, InstructionForm
 
 @login_required
+def view_recipes(request):
+    return render(request, 'recipe/view_recipes.html', {
+        'title': 'Recipes',
+    })
+
+@login_required
 def create_recipe(request):
     
     if request.method == 'POST':
@@ -95,4 +101,65 @@ def update_ingredient(request, recipe_primary_key, ingredient_primary_key):
     })
 
 
+@login_required
+def delete_ingredient(request, recipe_primary_key, ingredient_primary_key):
+    recipe = get_object_or_404(Recipe, pk=recipe_primary_key, created_by = request.user)
+    ingredient = get_object_or_404(Ingredient, pk=ingredient_primary_key, recipe=recipe)
+    ingredient.delete()
 
+    messages.success(request, "Ingredient deleted successfully")
+    return redirect('core:home')
+
+
+@login_required
+def create_instruction(request, recipe_primary_key):
+    if request.method == 'POST':
+        form = InstructionForm(request.POST)
+
+        if form.is_valid():
+            instruction = form.save(commit=False)
+            instruction.recipe_id = recipe_primary_key
+            instruction.save()
+            messages.success(request, "instruction created successfully")
+        else:
+            messages.error(request, "Failed to create the instruction")
+    else:
+        form = InstructionForm()
+    return render(request, 'recipe/form.html', {
+        'titel': 'Create Recipe Instruction',
+        'form': form,
+    })
+
+
+@login_required
+def update_instruction(request, recipe_primary_key, instruction_primary_key):
+    recipe = get_object_or_404(Recipe, pk=recipe_primary_key, created_by = request.user)
+    instruction = get_object_or_404(Ingredient, pk=instruction_primary_key, recipe=recipe)
+
+    if request.method == 'POST':
+        form = InstructionForm(request.POST, instance=instruction)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "instruction updated successfully")
+        else:
+            messages.error(request, "failed to update instruction")
+
+    else:
+        form = InstructionForm(instance=instruction)
+    return render(request, 'recipe/form.html', {
+        'title': 'Update Recipe instruction',
+        'form': form,
+        'recipe': recipe,
+        'instruction': instruction,
+    })
+
+
+@login_required
+def delete_instruction(request, recipe_primary_key, instruction_primary_key):
+    recipe = get_object_or_404(Recipe, pk=recipe_primary_key, created_by = request.user)
+    instruction = get_object_or_404(Instruction, pk=instruction_primary_key, recipe=recipe)
+    instruction.delete()
+
+    messages.success(request, "instruction deleted successfully")
+    return redirect('core:home')
