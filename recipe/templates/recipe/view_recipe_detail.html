@@ -1,0 +1,158 @@
+{% extends 'core/base.html' %}
+{% block title %} {{ title }} {% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-w-screen-xl mx-auto p-6 md:px:10 md:py-10 rounded-md">
+    <h1 class="mb-6 text-xl font-medium text-center"> Recipe Details </h1>
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Left side -->
+         <div class="md:col-span-1">
+            <img src="{{ recipe.image.url }}" alt="Recipe Image">
+
+         </div>
+
+        <!-- right side -->
+        <div class="md:col-span-1">
+            <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg" id="detail-tab" data-tabs-target="#detail" type="button" role="tab" aria-controls="detail" aria-selected="false">Detail</button>
+                    </li>
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="description-tab" data-tabs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="false">Description</button>
+                    </li>
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="ingredients-tab" data-tabs-target="#ingredients" type="button" role="tab" aria-controls="ingredients" aria-selected="false">Ingredient</button>
+                    </li>
+                    <li role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="instructions-tab" data-tabs-target="#instructions" type="button" role="tab" aria-controls="instructions" aria-selected="false">Instructions</button>
+                    </li>
+                </ul>
+            </div>
+            <div id="default-tab-content">
+                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="detail" role="tabpanel" aria-labelledby="detail-tab">
+                    <div class="flex flex-col">
+                        <div>
+                            <h1 class="text-lg  font-normal text-gray-800">Name: {{ recipe.name }}</h1>
+                        </div>
+                        <div>
+                            <h1 class="text-lg  font-normal text-gray-800">Cooking Time: {{ recipe.cook_time }}</h1>
+                        </div>
+                        <div>
+                            <h1 class="text-lg  font-normal text-gray-800">Serving: {{ recipe.serving }}</h1>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <p class="text-lg font-normal text-gray-500 dark:text-gray-400">{{ recipe.description }}</p>
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="ingredients" role="tabpanel" aria-labelledby="ingredients-tab">
+                    {% if ingredients %}
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">
+                                            Quantity
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Metric
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            Name
+                                        </th>
+                                        {% if request.user == recipe.created_by %}
+                                        <th scope="col" class="px-6 py-3">
+                                            <span class="sr-only">Edit</span>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            <span class="sr-only">delete</span>
+                                        </th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ingredient in ingredients %}
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            {{ ingredient.quantity }}
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            {{ ingredient.metric }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ ingredient.name }}
+                                        </td>
+                                        {% if request.user == recipe.created_by %}
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{% url 'recipe:update_ingredient' recipe.id ingredient.id %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="#" class="font-medium text-red-600 dark:text-blue-500 hover:underline">delete</a>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    {% endif %}
+                    
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
+                {% if instructions %}
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        Step Number
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Instruction
+                                    </th>
+                                    {% if request.user == recipe.created_by %}
+                                        <th scope="col" class="px-6 py-3">
+                                            <span class="sr-only">Edit</span>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            <span class="sr-only">delete</span>
+                                        </th>
+                                        {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instruction in instructions %}
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        {{instruction.step_number }}
+                                    </th>
+                                    <td class="px-6 py-4">
+                                        {{instruction.instruction_text }}
+                                    </td>
+                                    {% if request.user == recipe.created_by %}
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{% url 'recipe:update_instruction' recipe.id instruction.id %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{% url 'recipe:delete_instruction' recipe.id instruction.id %}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">delete</a>
+                                        </td>
+                                        {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {% endif %}
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

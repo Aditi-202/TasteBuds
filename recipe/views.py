@@ -1,14 +1,48 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 
 from .models import Category, Recipe, Ingredient, Instruction
 from .forms import RecipeForm, IngredientsForm, InstructionForm
 
 @login_required
+def view_user_recipes(request):
+    recipes = Recipe.objects.filter(created_by = request.user)
+    return render(request, 'recipe/view_user_recipes.html',{
+        'title': 'My recipes',
+        'recipes': recipes,
+    })
+
+@login_required
 def view_recipes(request):
+    query = request.GET.get('query', '')
+    category_id = request.GET.get('category', 0)
+    categories = Category.objects.all()
+    recipes = Recipe.objects.all()
+
+    if category_id:
+        recipes = recipes.filter(category_id=category_id)
+
+    if query:
+        recipes = recipes.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
     return render(request, 'recipe/view_recipes.html', {
         'title': 'Recipes',
+        'recipes': recipes,
+        'categories': categories,
+    })
+
+@login_required
+def view_recipe_detail(request, recipe_primary_key):
+    recipe = get_object_or_404(Recipe, pk=recipe_primary_key)
+    ingredients = Ingredient.objects.filter(recipe=recipe)  #(recipe_id=recipe_primary_key)
+    instructions = Instruction.objects.filter(recipe=recipe).order_by('step_number')  #(recipe_id=recipe_primary_key)
+    return render(request, 'recipe/view_recipe_detail.html',{
+        'title': 'Recipe Detail',
+        'recipe': recipe,
+        'ingredients': ingredients,
+        'instructions': instructions,
     })
 
 @login_required
