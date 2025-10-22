@@ -89,7 +89,7 @@
                                             <a href="{% url 'recipe:update_ingredient' recipe.id ingredient.id %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <a href="#" class="font-medium text-red-600 dark:text-blue-500 hover:underline">delete</a>
+                                            <a href="{% url 'recipe:delete_ingredient' recipe.id ingredient.id %}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">delete</a>
                                         </td>
                                         {% endif %}
                                     </tr>

@@ -168,7 +168,7 @@ def create_instruction(request, recipe_primary_key):
 @login_required
 def update_instruction(request, recipe_primary_key, instruction_primary_key):
     recipe = get_object_or_404(Recipe, pk=recipe_primary_key, created_by = request.user)
-    instruction = get_object_or_404(Ingredient, pk=instruction_primary_key, recipe=recipe)
+    instruction = get_object_or_404(Instruction, pk=instruction_primary_key, recipe=recipe)
 
     if request.method == 'POST':
         form = InstructionForm(request.POST, instance=instruction)
